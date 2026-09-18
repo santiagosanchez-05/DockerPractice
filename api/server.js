@@ -8,6 +8,16 @@ const pool = new Pool({
   database: process.env.POSTGRES_DB,
   port: Number(process.env.POSTGRES_PORT) || 5432,
 });
+
+const app = express();
+app.use(express.json());
+
+const API_PORT = process.env.API_PORT || 3000;
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.get('/users', async (req, res) => {
   try {
     const result = await pool.query('SELECT id, name, email FROM users ORDER BY id');
@@ -64,15 +74,3 @@ async function startServer() {
 }
 
 startServer();
-const app = express();
-app.use(express.json());
-
-const API_PORT = process.env.API_PORT || 3000;
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.listen(API_PORT, () => {
-  console.log(`API escuchando en el puerto ${API_PORT}`);
-});
